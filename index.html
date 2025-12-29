@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Grade Tracker (Simple)</title>
+  <style>
+    body { 
+        font-family: Arial, sans-serif; 
+        max-width: 700px; 
+        margin: 24px auto; 
+        padding: 0 12px;
+     }
+     .container {
+        border: 1px solid red; 
+        padding: 16px; 
+        border-radius: 8px; 
+        box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+     }
+    form { 
+        display:flex; 
+        gap:8px; margin-bottom:8px; 
+        align-items:center; 
+    }
+
+    #addButton {
+        padding: 8px 16px; 
+        background-color: #28a745; 
+        color: white; 
+        border: none; 
+        border-radius: 8px; 
+        cursor: pointer;
+    }
+    input[type="text"] { 
+        flex:1;
+         padding: 8px;
+         border: none;
+         border-radius: 8px;
+         outline: none;
+         box-shadow: 2px 2px 12px rgba(0,0,0,.1);
+
+         }
+         input[type="text"]:hover, input[type="number"]:hover {
+            box-shadow: 4px 4px 16px rgba(0,0,0,0.15);
+            transition: 0.3s;
+         }
+    input[type="number"] { 
+        width:120px; 
+        padding: 8px;
+        border: none;
+         border-radius: 8px;
+         outline: none;
+         box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+    }
+    button { 
+        padding:6px 10px; 
+    }
+    .error { 
+        color: darkred;
+         min-height:1.2em; 
+        }
+    table { 
+        width:100%; 
+        border-collapse:collapse; 
+        margin-top:8px; 
+        box-shadow: 4px 4px 16px rgba(0,0,0,0.15);
+    }
+    th, td { 
+        text-align:left; 
+        padding:6px; 
+        border-bottom:1px solid #ddd;
+        background-color: #f9f9f9;
+        box-shadow: 2px 2px 12px rgba(0,0,0,.1);
+     }
+    tr.below { background:#fff4f4; } 
+    .delete-btn {
+         background:#d9534f;
+          color:white;
+           border:none; 
+           padding:4px 8px; 
+           cursor:pointer;
+            border-radius:3px;
+         }
+    .delete-btn:hover {
+         background:#c9302c;
+          transition:0.3s;
+    }
+         .head-txt{
+            text-align: center;
+            background-color: red;
+            color: white;
+            padding: 10px;
+         }
+         .head-txt:hover{
+            background-color: darkred;
+            transition: 0.3s;
+         }
+         .avg-grade{
+            text-align: center;
+            margin-top: 18px;
+            font-weight: bold;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+         }
+  </style>
+</head>
+<body>
+  <h2 class="head-txt">Student Grade Tracker</h2>
+
+  <!-- form -->
+   <div class="container">
+    <form id="studentForm">
+    <input id="nameInput" type="text" placeholder="Student name" />
+    <input id="gradeInput" type="number" placeholder="Grade (0–100)" min="0" max="100" />
+    <button id="addButton" type="submit">Add</button>
+  </form>
+
+  <p id="errorMsg" class="error" aria-live="polite"></p>
+
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Grade</th><th>Delete</th></tr>
+    </thead>
+    <tbody id="studentTable"></tbody>
+  </table>
+
+  <h3 class="avg-grade">Average Grade: <span id="averageGrade">0.00</span></h3>
+
+   </div>
+  
+  <script>
+    // Keep students in an array of objects: { id, name, grade }
+    let students = [];
+
+    // Simple DOM helpers
+    let form = document.getElementById('studentForm');
+    let nameInput = document.getElementById('nameInput');
+    let gradeInput = document.getElementById('gradeInput');
+    let studentTable = document.getElementById('studentTable');
+    let averageGrade = document.getElementById('averageGrade');
+    let errorMsg = document.getElementById('errorMsg');
+    // Load saved students when the page opens
+    function loadStudents() {
+    let saved = localStorage.getItem('students');
+      if (saved) {
+        try {
+          let parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            students = parsed.map(function(s) {
+              return {
+                id: s.id || Date.now() + Math.floor(Math.random() * 1000),
+                name: String(s.name || ''),
+                grade: Number(s.grade || 0)
+              };
+            });
+          }
+        } catch (e) {
+          // if parse fails, start with empty list
+          students = [];
+        }
+      }
+    }
+
+    // Save students to localStorage
+    function saveStudents() {
+      localStorage.setItem('students', JSON.stringify(students));
+    }
+
+    // Calculate average grade (returns a number)
+    function calculateAverage() {
+      if (students.length === 0) return 0;
+      let sum = 0;
+      for (let i = 0; i < students.length; i++) {
+        sum += Number(students[i].grade) || 0;
+      }
+      return sum / students.length;
+    }
+
+    // Render the table and the average
+    function renderStudents() {
+      // Clear table body
+      studentTable.innerHTML = '';
+
+      let avg = calculateAverage();
+
+      // Create rows from students
+      for (let i = 0; i < students.length; i++) {
+        let s = students[i];
+        let tr = document.createElement('tr');
+
+        // Add highlight class if below average
+        if (students.length > 0 && s.grade < avg) {
+          tr.classList.add('below');
+        }
+
+        let tdName = document.createElement('td');
+        tdName.textContent = s.name;
+        tr.appendChild(tdName);
+
+        let tdGrade = document.createElement('td');
+        tdGrade.textContent = s.grade;
+        tr.appendChild(tdGrade);
+
+        let tdDelete = document.createElement('td');
+        let btn = document.createElement('button');
+        btn.textContent = 'Delete';
+        btn.className = 'delete-btn';
+        // store id on button so we know which student to remove
+        btn.dataset.id = s.id;
+        // attach click handler to delete this student
+        btn.addEventListener('click', function (e) {
+          var id = Number(e.target.dataset.id);
+          deleteStudent(id);
+        });
+        tdDelete.appendChild(btn);
+        tr.appendChild(tdDelete);
+
+        studentTable.appendChild(tr);
+      }
+
+      // Show average with two decimal places
+      averageGrade.textContent = avg.toFixed(2);
+
+      // Persist changes
+      saveStudents();
+    }
+
+    // Add a new student after validating input
+    function addStudent(name, grade) {
+      // simple validation
+      if (!name || name.trim() === '') {
+        errorMsg.textContent = 'Enter a name.';
+        return;
+      }
+      if (grade === '' || isNaN(grade) || grade < 0 || grade > 100) {
+        errorMsg.textContent = 'Enter a grade between 0 and 100.';
+        return;
+      }
+
+      errorMsg.textContent = '';
+
+      let student = {
+        id: Date.now() + Math.floor(Math.random() * 1000),
+        name: name.trim(),
+        grade: Number(grade)
+      };
+
+      students.push(student);
+      renderStudents();
+
+      // Clear inputs
+      nameInput.value = '';
+      gradeInput.value = '';
+      nameInput.focus();
+    }
+
+    // delete a student by id
+    function deleteStudent(id) {
+      students = students.filter(function (s) { return s.id !== id; });
+      renderStudents();
+    }
+
+    // Wire the form submit event
+    form.addEventListener('submit', function (event) {
+      event.preventDefault(); // don't reload the page
+      addStudent(nameInput.value, gradeInput.value);
+    });
+
+    // Initialize
+    loadStudents();
+    renderStudents();
+  </script>
+</body>
+</html>
