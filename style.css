@@ -1,0 +1,99 @@
+
+    body { 
+        font-family: Arial, sans-serif; 
+        max-width: 700px; 
+        margin: 24px auto; 
+        padding: 0 12px;
+     }
+     .container {
+        border: 1px solid red; 
+        padding: 16px; 
+        border-radius: 8px; 
+        box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+     }
+    form { 
+        display:flex; 
+        gap:8px; margin-bottom:8px; 
+        align-items:center; 
+    }
+
+    #addButton {
+        padding: 8px 16px; 
+        background-color: #28a745; 
+        color: white; 
+        border: none; 
+        border-radius: 8px; 
+        cursor: pointer;
+    }
+    input[type="text"] { 
+        flex:1;
+         padding: 8px;
+         border: none;
+         border-radius: 8px;
+         outline: none;
+         box-shadow: 2px 2px 12px rgba(0,0,0,.1);
+
+         }
+         input[type="text"]:hover, input[type="number"]:hover {
+            box-shadow: 4px 4px 16px rgba(0,0,0,0.15);
+            transition: 0.3s;
+         }
+    input[type="number"] { 
+        width:120px; 
+        padding: 8px;
+        border: none;
+         border-radius: 8px;
+         outline: none;
+         box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+    }
+    button { 
+        padding:6px 10px; 
+    }
+    .error { 
+        color: darkred;
+         min-height:1.2em; 
+        }
+    table { 
+        width:100%; 
+        border-collapse:collapse; 
+        margin-top:8px; 
+        box-shadow: 4px 4px 16px rgba(0,0,0,0.15);
+    }
+    th, td { 
+        text-align:left; 
+        padding:6px; 
+        border-bottom:1px solid #ddd;
+        background-color: #f9f9f9;
+        box-shadow: 2px 2px 12px rgba(0,0,0,.1);
+     }
+    tr.below { background:#fff4f4; } 
+    .delete-btn {
+         background:#d9534f;
+          color:white;
+           border:none; 
+           padding:4px 8px; 
+           cursor:pointer;
+            border-radius:3px;
+         }
+    .delete-btn:hover {
+         background:#c9302c;
+          transition:0.3s;
+    }
+         .head-txt{
+            text-align: center;
+            background-color: red;
+            color: white;
+            padding: 10px;
+         }
+         .head-txt:hover{
+            background-color: darkred;
+            transition: 0.3s;
+         }
+         .avg-grade{
+            text-align: center;
+            margin-top: 18px;
+            font-weight: bold;
+            
+
+         }
+  
